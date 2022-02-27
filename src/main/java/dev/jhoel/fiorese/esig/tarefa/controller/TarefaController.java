@@ -132,7 +132,7 @@ public class TarefaController{
 
     public void buscar() throws Exception {
         tarefa.setStatus(false);
-        if(data.isBlank()){
+        if(data.isEmpty()){
             tarefa.setDeadLine(null);
         } else {
             Date date1 = new SimpleDateFormat("dd/MM/yyyy").parse(data);
