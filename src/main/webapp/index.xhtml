@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core">
+<h:head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes"/>
+    <meta name="description" content="Aplicativo de Tarefas"/>
+    <meta name="author" content="Jhoel Fiorese"/>
+    <meta name="theme-color" content="#6d29b5"/>
+    <title>Aplicativo de Tarefas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+</h:head>
+
+<h:body class="text-center">
+    <div class="row">
+        <h:form id="formgeral">
+            <p:growl id="msgs" showDetail="true" skipDetailIfEqualsSummary="true"/>
+                <div>
+                    <h:form id="tarefaForm" class="input-group" autocomplete="off">
+                        <div style="margin: 15%; margin-top: 3% !important;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <p:outputLabel for="titulo" value="Título"/>
+                                    <p:inputText id="titulo" class="form-control" value="#{tarefaController.tarefa.titulo}" placeholder="Título" maxlength="25"/>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <p:outputLabel for="descricao" value="Descrição"/>
+                                    <p:inputTextarea id="descricao" value="#{tarefaController.tarefa.descricao}"  class="form-control" placeholder="Descrição" rows="4" maxlength="50"/>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <div class="col-md-6">
+                                        <p:outputLabel for="responsavel" value="Responsável"/>
+                                        <p:selectOneMenu id="responsavel" value="#{tarefaController.tarefa.usuario.nome}" class="form-control">
+                                        <f:selectItem itemLabel="Escolha o Responsável" itemValue=""/>
+                                        <f:selectItems value="#{usuarioController.usuarios}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p:outputLabel for="prioridade" value="Prioridade"/>
+                                        <p:selectOneMenu id="prioridade" value="#{tarefaController.tarefa.prioridade}" class="form-control">
+                                        <f:selectItem itemLabel="Escolha a prioridade" itemValue="#{null}" noSelectionOption="true"/>
+                                        <f:selectItems value="#{tarefaController.prioridades}"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <div class="col-md-4" style="margin-top: 4%;">
+                                        <p:outputLabel for="date" value="DeadLine"/>
+                                        <p:inputMask id="date" class="form-control" value="#{tarefaController.data}" placeholder="DeadLine" mask="99/99/9999"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <p:commandButton class="btn btn-primary" icon="ui-icon-send" action="#{tarefaController.create}" type="submit" value="Cadastrar Tarefa" ajax="false" validateClient="true" style="margin-right: 6%; background: mediumseagreen;"/>
+                                <p:commandButton class="btn btn-primary" icon="ui-icon-search" action="#{tarefaController.buscar}" type="submit" value="Pesquisar Tarefa" ajax="false" validateClient="true" style="margin-right: 6%; background: darkgreen;"/>
+                                <p:commandButton class="btn btn-primary" id="btn-cadUsu" icon="ui-icon-book" action="#{tarefaController.buscar}" type="submit" value="Cadastrar Usuário" onclick="PF('dlg3').show();"/>
+                            </div>
+                        </div>
+                    </h:form>
+                </div>
+        </h:form>
+    </div>
+
+    <div class="row" style="margin: 15%; margin-top: 3% !important;">
+        <p:dataList
+                id="tarefaList"
+                var="tarefa"
+                value="#{tarefaController.tarefas}"
+                type="unordered"
+                itemType="none"
+                emptyMessage=""
+                paginator="true" rows="10"
+                showGridlines="true"
+
+        >
+            <f:facet name="header">
+                <h:panelGroup
+                        styleClass="toolbar"
+                        layout="block"
+                        rendered="#{tarefaController.tarefaCount > 0}"
+                >
+                </h:panelGroup>
+                <h:form rendered="#{tarefaController.tarefaCount > 0}">
+                    <p:toolbar>
+                        <f:facet name="right">
+                            <p:menuButton value="#{tarefaController.filterText}">
+                                <p:menuitem value="Completos"
+                                            action="#{tarefaController.toggleDoneFilter}"
+                                            update=":tarefaList"
+                                />
+                                <p:menuitem value="Pendentes"
+                                            action="#{tarefaController.togglePendingFilter}"
+                                            update=":tarefaList"
+                                />
+                                <p:menuitem value="Todos"
+                                            action="#{tarefaController.toggleAllFilter}"
+                                            update=":tarefaList"
+                                />
+                            </p:menuButton>
+                        </f:facet>
+
+                    </p:toolbar>
+                </h:form>
+            </f:facet>
+            <f:facet name="footer">
+                <h:panelGroup
+                        styleClass="empty-list"
+                        layout="block"
+                        rendered="#{!tarefaController.hasTarefas() and tarefaController.tarefaCount > 0}"
+                >
+                    <i class="material-icons">
+                        inbox
+                    </i>
+                    <h:outputText
+                            styleClass="no-tarefa"
+                            value="Nenhuma tarefa para o filtro especificado"
+                    />
+                </h:panelGroup>
+            </f:facet>
+
+
+            <h:panelGroup layout="block" id="tarefaItem" class="tarefa-item">
+                <h:form layout="inline" class="input-group" rendered="#{tarefaController.isEditing(tarefa)}">
+                    <p:remoteCommand
+                            name="cancelEdit"
+                            process="@this"
+                            update=":tarefaList"
+                            action="#{tarefaController.cancelEdit}"
+                    />
+                    <p:defaultCommand target="save"/>
+                    <p:commandLink
+                            class="zeroSize"
+                            update=":tarefaList"
+                            process="@this"
+                            action="#{tarefaController.cancelEdit}"
+                    />
+                    <p:inputText
+                            id="editingTitle"
+                            value="#{tarefaController.selected.titulo}"
+                            styleClass="tarefa-edit"
+                            autocomplete="off"
+                            required="true"
+                            maxlength="25"
+                    />
+                    <p:inputText
+                            id="editing"
+                            value="#{tarefaController.selected.descricao}"
+                            styleClass="tarefa-edit"
+                            autocomplete="off"
+                            required="true"
+                            maxlength="50"
+                    />
+                    <p:selectOneMenu
+                            id="editing_prioridade"
+                            value="#{tarefaController.selected.prioridade}"
+                            class="form-control"
+                            styleClass="tarefa-edit"
+                            autocomplete="off"
+                            required="true"
+                    >
+
+                        <f:selectItems value="#{tarefaController.prioridades}"/>
+                    </p:selectOneMenu>
+
+                    <p:selectOneMenu
+                            id="editing_responsavel"
+                            value="#{tarefaController.selected.usuario.nome}"
+                            class="form-control"
+                            styleClass="tarefa-edit"
+                            autocomplete="off"
+                            required="true"
+                    >
+
+                        <f:selectItems value="#{usuarioController.usuarios}" itemLabel="#{usuarioController.usuarios}"/>
+                    </p:selectOneMenu>
+
+                    <p:commandButton
+                            class="zeroSize"
+                            id="save"
+                            type="submit" value="Editar"
+                            ajax="false" validateClient="true"
+                            update=":tarefaList"
+                            action="#{tarefaController.save(tarefa)}"
+                            icon="ui-icon-disk"
+                            style="background: forestgreen;"
+                    />
+
+                </h:form>
+
+                <h:form class="input-group" rendered="#{!tarefaController.isEditing(tarefa)}" style="display: flex; padding-top: 2%;">
+
+                    <h:selectBooleanCheckbox
+                            styleClass="tarefa-status"
+                            value="#{tarefa.status}"
+                            id="complete"
+                            style="margin-right: 5%;"
+                    >
+                        <p:ajax
+                                event="change"
+                                listener="#{tarefaController.save(tarefa)}"
+                                update=":tarefaList"
+
+                        />
+                    </h:selectBooleanCheckbox>
+                    <h:outputLabel class="checkbox" for="complete">
+                        <h:outputText styleClass="box"/>
+                        <h:outputText styleClass="check"/>
+                    </h:outputLabel>
+
+                    <h:outputLabel
+                            class="tarefa-content"
+                            id="tarefa"
+                            style="font-size: 80%;"
+
+                    >
+                        <h:outputText value="#{tarefa.titulo}"/>
+
+                        <p:ajax
+                                event="dblclick"
+                                listener="#{tarefaController.setSelected(tarefa)}"
+                                oncomplete="focusFix(jQuery('.tarefa-edit'))"
+                                update=":tarefaList"
+
+                        />
+                    </h:outputLabel>
+
+                    <h:outputLabel
+                            class="tarefa-content"
+                            id="descricao_list"
+                            style="margin-left: 25%; position: absolute; font-size: 80%;"
+                    >
+
+                        <h:outputText value="#{tarefa.descricao}"/>
+                        <p:ajax
+                                event="dblclick"
+                                listener="#{tarefaController.setSelected(tarefa)}"
+                                oncomplete="focusFix(jQuery('.tarefa-edit'))"
+                                update=":tarefaList"
+
+                        />
+                    </h:outputLabel>
+
+                    <h:outputLabel
+                            class="tarefa-content"
+                            id="prioridade_list"
+                            style="margin-left: 62%; position: absolute; font-size: 80%;"
+                    >
+
+                        <h:outputText value="#{tarefa.prioridade}"/>
+                        <p:ajax
+                                event="dblclick"
+                                listener="#{tarefaController.setSelected(tarefa)}"
+                                oncomplete="focusFix(jQuery('.tarefa-edit'))"
+                                update=":tarefaList"
+
+                        />
+                    </h:outputLabel>
+
+                    <h:outputLabel
+                            class="tarefa-content"
+                            id="responsavel_list"
+                            style="margin-left: 70%; position: absolute;  font-size: 80%;"
+                    >
+
+                        <h:outputText value="#{tarefa.usuario.nome}"/>
+                        <p:ajax
+                                event="dblclick"
+                                listener="#{tarefaController.setSelected(tarefa)}"
+                                oncomplete="focusFix(jQuery('.tarefa-edit'))"
+                                update=":tarefaList"
+
+                        />
+                    </h:outputLabel>
+
+                    <h:outputLabel
+                            class="tarefa-content"
+                            id="deadLine_list"
+                            style="margin-left: 83%;  position: absolute; font-size: 80%;"
+                    >
+
+                        <h:outputText value="#{tarefa.deadLine}"/>
+                        <p:ajax
+                                event="dblclick"
+                                listener="#{tarefaController.setSelected(tarefa)}"
+                                oncomplete="focusFix(jQuery('.tarefa-edit'))"
+                                update=":tarefaList"
+
+                        />
+                    </h:outputLabel>
+
+
+
+                    <div class="input-group-append" style="margin-left: 90%; margin-top: -1.5%; position: absolute;">
+                        <p:commandLink
+                                styleClass="btn remove"
+                                update=":tarefaList"
+                                action="#{tarefaController.delete(tarefa)}"
+                        >
+                            <span class="material-icons" style="color: red;">close</span>
+                        </p:commandLink>
+                    </div>
+                </h:form>
+            </h:panelGroup>
+        </p:dataList>
+    </div>
+
+
+
+
+    <p:dialog header="Cadastrar Usuário" widgetVar="dlg3" showEffect="explode" hideEffect="bounce" height="200" width="500" resizable="false">
+
+        <h:form class="form"  id="usuarioForm" style="margin-left: 35%;" autocomplete="off">
+            <div class="formusuario">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <p:outputLabel for="nome" value="Nome"/>
+                        <p:inputText id="nome" class="form-control" placeholder="Nome" rendered="true" value="#{usuarioController.usuario.nome}" maxlength="15"/>
+                    </div>
+                </div>
+                <div class="row" style="margin-right: 50%; margin-top: 3%;">
+                    <h:commandButton class="btn btn-primary" type="submit" value="Cadastrar" action="#{usuarioController.create}" icon="pi pi-check" styleClass="p-mt-3"/>
+                </div>
+            </div>
+        </h:form>
+    </p:dialog>
+
+    <h:outputScript library="primefaces" name="jquery/jquery.js"/>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js">
+    </script>
+</h:body>
+
+</html>
