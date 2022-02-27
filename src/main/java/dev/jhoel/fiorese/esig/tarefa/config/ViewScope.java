@@ -16,7 +16,7 @@ public class ViewScope implements Scope {
     
     @Override
     public synchronized Object get( String name,  ObjectFactory<?> objectFactory) {
-        var instance = getViewMap().get(name);
+        Object instance = getViewMap().get(name);
         if (instance == null) {
             instance = objectFactory.getObject();
             getViewMap().put(name, instance);
@@ -26,7 +26,7 @@ public class ViewScope implements Scope {
 
     @Override
     public Object remove( String name) {
-        var instance = getViewMap().remove(name);
+        Object instance = getViewMap().remove(name);
         if (instance == null) {
             val callbacks = (Map<String, Runnable>) getViewMap().get(VIEW_SCOPE_CALLBACKS);
             if (callbacks != null)
