@@ -15,7 +15,6 @@ Também é possível filtrar utilizando o mesmo campo de cadastro e clicando no 
 - Flyway 5.0.0
 - Hibernate 5.2.17
 - PostgreSQL 42.3.3
-- JDA 3.8.3_462
 - Lombok 1.18.8
 - Junit Jupiter 5.8.2
 
