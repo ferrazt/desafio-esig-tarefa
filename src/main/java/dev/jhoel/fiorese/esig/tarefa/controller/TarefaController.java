@@ -83,8 +83,9 @@ public class TarefaController{
 
     public void togglePendingFilter() {
         filter = false;
-        filterText = "Pedentes";
+        filterText = "Pendentes";
         loadData();
+
     }
 
     public void delete(Tarefa tarefa) {
