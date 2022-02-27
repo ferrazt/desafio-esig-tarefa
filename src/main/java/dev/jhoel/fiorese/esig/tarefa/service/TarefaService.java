@@ -6,6 +6,7 @@ import dev.jhoel.fiorese.esig.tarefa.model.Usuario;
 import dev.jhoel.fiorese.esig.tarefa.model.enums.Prioridade;
 import dev.jhoel.fiorese.esig.tarefa.repository.TarefaRepository;
 import lombok.val;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -18,11 +19,8 @@ import java.util.stream.Collectors;
 @Transactional
 public class TarefaService {
 
-    private final TarefaRepository tarefaRepository;
-
-    public TarefaService(TarefaRepository tarefaRepository) {
-        this.tarefaRepository = tarefaRepository;
-    }
+    @Autowired
+    TarefaRepository tarefaRepository;
 
 
     public long count(){
